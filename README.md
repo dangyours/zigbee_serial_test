@@ -1,3 +1,11 @@
+## env require
+```
+sudo apt install g++ git autogen autoconf build-essential cmake graphviz libserial-dev \
+                 libboost-dev libboost-test-dev libgtest-dev libtool \
+                 python3-sip-dev doxygen python3-sphinx pkg-config \
+                 python3-sphinx-rtd-theme
+```
+
 ## serial_at
 
 use to control at commnunication. usage: ./serial_at /dev/ttyUSB0 AT+NWK?
