@@ -4,7 +4,7 @@ CXXFLAGS = -std=c++11 -Wall -I/usr/local/include
 LDFLAGS = -L/usr/local/lib -lserial
 
 # 目标可执行文件
-TARGET = single_communication serial_master serial_slave serial_master_all serial_slave_all serial_at
+TARGET = single_communication serial_master serial_slave serial_master_all serial_slave_all serial_at serial_hex
 
 # 源文件（自动扫描当前目录的 .cpp 文件）
 SRCS = $(wildcard *.cpp)
@@ -31,6 +31,9 @@ serial_slave_all: serial_slave_all.o
 	g++ -std=c++11 -Wall $^ -o $@ -L/usr/local/lib -lserial
 
 serial_at: serial_at.o
+	g++ -std=c++11 -Wall $^ -o $@ -L/usr/local/lib -lserial
+
+serial_hex: serial_hex.o
 	g++ -std=c++11 -Wall $^ -o $@ -L/usr/local/lib -lserial
 
 %.o: %.cpp
