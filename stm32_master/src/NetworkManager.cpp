@@ -45,6 +45,7 @@ void NetworkManager::establish_network() {
     } catch (const LibSerial::ReadTimeout&) {
         // This is expected and indicates the end of the data stream.
         std::cout << "--- End of List ---" << std::endl;
+        serial_port.Write("AT+EXIT");
     }
     
     std::cout << "\nNetwork establishment process complete." << std::endl;

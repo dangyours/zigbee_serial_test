@@ -40,7 +40,8 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         int num_slaves = std::stoi(argv[3]);
-        MasterPoller poller(serial_port, num_slaves, {3, 12});
+        // MasterPoller poller(serial_port, num_slaves, {3, 12});
+        MasterPoller poller(serial_port, num_slaves, {});
         poller.poll_slaves();
     } else if (mode == "network") { // Add this block for the new mode
         NetworkManager manager(serial_port);

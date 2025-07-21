@@ -29,20 +29,22 @@ void MasterPoller::poll_slaves() {
     std::vector<std::string> slaves_to_poll = this->pending_slaves;
 
     while (!slaves_to_poll.empty() && retries_left > 0) {
-        // Build the command string from the list of slaves that haven't responded yet
-        std::string command_str;
+        // Build the data payload (the space-separated list of slave IDs)
+        std::string data_payload;
         for (const auto& slave_id : slaves_to_poll) {
-            command_str += slave_id + " ";
+            data_payload += slave_id + " ";
         }
-        command_str.pop_back(); // Remove the last space
-        command_str.push_back('\n');
+        data_payload.pop_back(); // Remove the last space
 
-        std::cout << "Polling slaves: " << command_str;
+        // Construct the final command string with the "MDATA:" prefix
+        std::string command_str = "MDATA:" + data_payload + "\r\n";
+
+        std::cout << "Sending command: " << command_str;
         serial_port.Write(command_str);
 
         try {
             std::string response;
-            serial_port.ReadLine(response, '\n', slaves_to_poll.size() * TIMEOUT_PER_RECEIVE);
+            serial_port.ReadLine(response, '\n', slaves_to_poll.size() * 1000);
 
             size_t first_valid = response.find_first_not_of('\0');
             if (first_valid != std::string::npos) {
