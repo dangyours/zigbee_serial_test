@@ -12,11 +12,12 @@ public:
 
     // Main function to perform the polling operation
     void poll_slaves();
+    void send_uart_data(std::vector<std::string> slaves_to_poll);
 
 private:
     LibSerial::SerialPort& serial_port;
     std::vector<std::string> pending_slaves;
-
+    std::string encode_to_hex_bitmap(const std::vector<std::string> &slaves_to_poll) const;
     // Constants for configuration
     static const int MAX_RETRY_TIMES = 10;
     static const int TIMEOUT_PER_RECEIVE = 60; // ms
