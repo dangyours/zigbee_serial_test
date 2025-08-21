@@ -1,12 +1,16 @@
 #include "MasterPoller.h"
+#include "json.hpp" // nlohmann/json library
 #include <algorithm>
 #include <chrono>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string.h>
 #include <vector>
 #include <cmath>     // For ceil
+
+using json = nlohmann::json;
 
 std::string MasterPoller::encode_to_hex_bitmap(const std::vector<std::string>& slaves_to_poll) const
 {
@@ -53,13 +57,38 @@ std::string MasterPoller::encode_to_hex_bitmap(const std::vector<std::string>& s
     return hex_stream.str();
 }
 
-MasterPoller::MasterPoller(LibSerial::SerialPort &port, int slave_count, const std::vector<int> &slaves_to_skip)
+MasterPoller::MasterPoller(LibSerial::SerialPort &port, int slave_count, const std::string& config_file, const std::vector<int> &slaves_to_skip)
     : serial_port(port)
 {
+    // Read slaves_to_skip from config file if available
+    std::vector<int> config_slaves_to_skip = slaves_to_skip;
+    
+    try {
+        json config;
+        std::ifstream inFile(config_file);
+        if (inFile.is_open() && inFile.peek() != std::ifstream::traits_type::eof()) {
+            inFile >> config;
+            
+            // Check if polling_settings and slaves_to_skip exist in config
+            if (config.contains("polling_settings") && config["polling_settings"].contains("slaves_to_skip")) {
+                config_slaves_to_skip = config["polling_settings"]["slaves_to_skip"].get<std::vector<int>>();
+                std::cout << "Loaded slaves_to_skip from config: ";
+                for (int id : config_slaves_to_skip) {
+                    std::cout << id << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
+        inFile.close();
+    } catch (const std::exception& e) {
+        std::cerr << "Warning: Could not read config file " << config_file << ": " << e.what() << std::endl;
+        std::cerr << "Using provided slaves_to_skip parameter." << std::endl;
+    }
+    
     // Build the initial list of slaves to poll
     for (int i = 1; i <= slave_count; ++i) {
         // Check if the current slave ID is in the skip list
-        if (std::find(slaves_to_skip.begin(), slaves_to_skip.end(), i) == slaves_to_skip.end()) {
+        if (std::find(config_slaves_to_skip.begin(), config_slaves_to_skip.end(), i) == config_slaves_to_skip.end()) {
             std::ostringstream ss;
             ss << std::setw(2) << std::setfill('0') << i;
             this->pending_slaves.push_back(ss.str());

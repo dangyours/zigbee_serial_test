@@ -7,8 +7,8 @@
 
 class MasterPoller {
 public:
-    // Constructor takes the port, number of slaves, and a list of slaves to skip
-    MasterPoller(LibSerial::SerialPort& port, int slave_count, const std::vector<int>& slaves_to_skip = {});
+    // Constructor takes the port, number of slaves, config file path, and optional list of slaves to skip
+    MasterPoller(LibSerial::SerialPort& port, int slave_count, const std::string& config_file = "config.json", const std::vector<int>& slaves_to_skip = {});
 
     // Main function to perform the polling operation
     void poll_slaves();

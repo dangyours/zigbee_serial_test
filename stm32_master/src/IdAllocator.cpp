@@ -53,7 +53,7 @@ int IdAllocator::getIDForAddress(const std::string& address) {
     if (inFile.is_open() && inFile.peek() != std::ifstream::traits_type::eof()) {
         inFile >> config;
     } else {
-        config = {{"next_id", 0}, {"devices", json::object()}};
+        config = {{"next_id", 1}, {"devices", json::object()}};
     }
     inFile.close();
 
